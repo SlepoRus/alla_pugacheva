@@ -5,9 +5,10 @@ class Item {
     private cost: number;
     private requiredStats: CharacterStats;
 
-    constructor(uniqName: string, cost: number) {
+    constructor(uniqName: string, cost: number, requiredStats: CharacterStats) {
         this.uniqName = uniqName;
         this.cost = cost;
+        this.requiredStats = requiredStats;
     }
 
     private additionalRequires() {

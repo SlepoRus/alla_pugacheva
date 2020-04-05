@@ -1,7 +1,7 @@
-import {ScaleStats} from "../types/items";
+import {ScaleStats, StatsType} from "../types/items";
 import {CharacterStats} from "../types/character";
 
-export function calculateScale(scaleStats: Record<ScaleStats, number>, ownStat: number, {
+export function calculateScale(scaleStats: StatsType, ownStat: number, {
     str, agi, int
 }: CharacterStats) {
     const keys = Object.keys(scaleStats) as ScaleStats[];

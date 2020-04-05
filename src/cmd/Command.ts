@@ -1,5 +1,3 @@
-import { writeFile } from 'fs';
-
 class Command {
     public command: string;
 

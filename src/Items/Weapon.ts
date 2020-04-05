@@ -1,26 +1,29 @@
 import {CharacterStats} from "../types/character";
 import {Item} from "./Item";
-import {ScaleStats} from "../types/items";
+import {StatsType, WeaponType} from "../types/items";
 import {calculateScale} from "../helpers/calculateStats";
 
 class Weapon extends Item {
     private damage: number;
-    private statsBuff: Record<ScaleStats, number>;
-    private scaleStats: Record<ScaleStats, number>;
-    private weaponType:
+    private statsBuff: StatsType;
+    private scaleStats: StatsType;
+    private weaponType: WeaponType;
 
     constructor(
         damage: number,
         uniqName: string,
         cost: number,
-        scaleStats: Record<ScaleStats, number>,
-        statsBuff: Record<ScaleStats, number>
+        scaleStats: StatsType,
+        statsBuff: StatsType,
+        weaponType: WeaponType,
+        requiredStats: CharacterStats
     ) {
-        super(uniqName, cost);
+        super(uniqName, cost, requiredStats);
 
         this.damage = damage;
         this.scaleStats = scaleStats;
         this.statsBuff = statsBuff;
+        this.weaponType = weaponType;
     }
 
     public getWeaponDamage(characterStats: CharacterStats) {
@@ -33,7 +36,9 @@ class Weapon extends Item {
         return this.statsBuff;
     }
 
-    public getWeaponType() {}
+    public getWeaponType() {
+        return this.weaponType;
+    }
 }
 
 export {

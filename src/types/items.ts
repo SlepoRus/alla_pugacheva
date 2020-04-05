@@ -22,5 +22,14 @@ export enum WeaponType {
     MACE = 'MACE',
     AXE = 'AXE',
     STAFF = 'STAFF',
-
+    BIG_SWORD = 'BIG_SWORD',
+    BIG_MACE = 'BIG_MACE'
 }
+
+export enum ArmorType {
+    LITE = 'LITE',
+    MEDIUM = 'MEDIUM',
+    HEAVY = 'HEAVY'
+}
+
+export type StatsType = Partial<Record<ScaleStats, number>>;

@@ -1,5 +1,6 @@
 import {Weapon} from "../Items/Weapon";
-import {ScaleStats, WeaponType} from "../types/items";
+import {ArmorType, ScaleStats, WeaponType} from "../types/items";
+import {Armor} from "../Items/Armor";
 
 const sword_1 = new Weapon(
     10,
@@ -45,7 +46,30 @@ const sword_2 = new Weapon(
     }
 );
 
+const armor_1 = new Armor(
+    20,
+    'armor_RS.5A.3BS1A.7',
+    5,
+    {
+        [ScaleStats.STR]: 0.5,
+        [ScaleStats.AGI]: 0
+    },
+    {
+        [ScaleStats.STR]: 2,
+        [ScaleStats.AGI]: 0
+    },
+    ArmorType.LITE,
+    {
+        str: 2,
+        agi: 0,
+        int: 0,
+        stm: 5,
+        luck: 0
+    }
+)
+
 export const store = [
     sword_1,
-    sword_2
+    sword_2,
+    armor_1
 ];

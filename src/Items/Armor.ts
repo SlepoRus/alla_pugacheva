@@ -36,3 +36,7 @@ class Armor extends Item {
         return this.statsBuff;
     }
 }
+
+export {
+    Armor
+}

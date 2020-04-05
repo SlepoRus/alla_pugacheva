@@ -1,13 +1,8 @@
-interface CharacterStats {
-    str: number;
-    int: number;
-    luck: number;
-    agi: number;
-    stm: number;
-}
+import {CharacterStats} from "../types/character";
+import {Poitions} from "../types/items";
 
-interface CharacterItems {
-    poitions:
+export interface CharacterItems {
+    poitions: Poitions;
 }
 
 class Character {

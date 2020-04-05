@@ -26,7 +26,7 @@ const sword_1 = new Weapon(
 
 const sword_2 = new Weapon(
     20,
-    'sword_RS.5A.3BS1A.7',
+    'sword_RS8A7BS1A.7',
     5,
     {
         [ScaleStats.STR]: 0.5,
@@ -41,14 +41,14 @@ const sword_2 = new Weapon(
         str: 8,
         agi: 7,
         int: 0,
-        stm: 6,
+        stm: 0,
         luck: 0
     }
 );
 
 const armor_1 = new Armor(
     20,
-    'armor_RS.5A.3BS1A.7',
+    'armor_RS2BS1A.7',
     5,
     {
         [ScaleStats.STR]: 0.5,
@@ -63,7 +63,7 @@ const armor_1 = new Armor(
         str: 2,
         agi: 0,
         int: 0,
-        stm: 5,
+        stm: 0,
         luck: 0
     }
 )

@@ -1,13 +1,16 @@
+export type doFunc = (userName: string) => void;
+
 class Command {
     public command: string;
 
-    constructor(command: string) {
+    constructor(command: string, doFunc: doFunc) {
         this.command = command;
+        this.do = doFunc;
     }
 
-    public do(userName: string) {}
+    public do(userName: string, cmd: string) {}
 
-    public call(userName: string) {
+    public call(userName: string, cmd: string) {
         const { command } = this;
 
         try {

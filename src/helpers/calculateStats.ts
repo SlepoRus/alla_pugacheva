@@ -22,3 +22,11 @@ export function calculateScale(scaleStats: StatsType, ownStat: number, {
         return acc;
     }, 0) + ownStat
 }
+
+export function getStatsCount(stats: CharacterStats): number {
+    return Object.keys(stats).reduce((acc, next) => {
+        acc += stats[next];
+
+        return acc;
+    }, 0)
+}

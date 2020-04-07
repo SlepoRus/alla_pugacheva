@@ -1,7 +1,12 @@
-function parseCommand(cmd: string) {
-
+export function parseToFight(cmd: string): string {
+    return (cmd.split(' ')[1] || '').toLowerCase();
 }
 
-function isValidCommand(cmd: string) {
-    return cmd.split()
+export function parseNameForChat(msg: string) {
+    return `@${msg}`
+}
+
+export function parseNameForCode(msg: string) {
+    return msg.replace('#',"")
+
 }

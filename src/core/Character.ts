@@ -1,6 +1,7 @@
 import {CharacterStats, DEFAULT_DAMAGE} from "../types/character";
 import {Weapon} from "../Items/Weapon";
 import {Armor} from "../Items/Armor";
+import {ScaleStats, WeaponSpecial} from "../types/items";
 
 class Character {
     private stats: CharacterStats;
@@ -12,12 +13,15 @@ class Character {
     private skillPoints: number;
     private level: number;
 
-    constructor(stats: CharacterStats, weapon: Weapon[], skillPoints: number, level: number, armor?: Armor) {
+    constructor(stats: CharacterStats, weapon: Weapon[], skillPoints: number, level: number, exp: number = 0, armor?: Armor) {
         this.stats = stats;
+        this.stamina = stats.stm;
         this.weapon = weapon;
         this.armor = armor;
+        this.health = stats.str * 10;
         this.skillPoints = skillPoints;
         this.level = level;
+        this.exp = exp;
     }
 
     public getSerializeCharacter() {
@@ -62,9 +66,10 @@ class Character {
     public increaseExp(exp: number) {
         this.exp += exp;
 
-        if (this.exp === (this.level^2) * 10) {
+        if (this.exp === (Math.max(Math.pow(this.level,2), 10) * 10)) {
             this.exp = 0;
             this.skillPoints++;
+            this.level++;
         }
     }
 
@@ -99,4 +104,76 @@ class Character {
     public increaseStats(stat: keyof CharacterStats, inc: number) {
         this.stats[stat] += inc;
     }
+
+    public getCharacterSpeed() {
+        return this.stamina;
+    }
+
+    public getLVL() {
+        return this.level;
+    }
+
+    public equipWeapon(weapon: Weapon) {
+        if (!weapon) {
+            return;
+        }
+
+        const isAvailable = weapon.isAvailable(this.stats);
+
+        if (isAvailable) {
+            if (this.weapon.length === 2) {
+                this.weapon.pop();
+            }
+
+            this.weapon.push(weapon);
+        }
+    }
+
+    public getStats(): CharacterStats {
+        const [ rw, lw ] = this.weapon;
+        let { str, agi, int, stm, luck, unluck } = this.stats;
+
+        if (rw) {
+            const stats = rw.getStatsBuff();
+
+            str += Number(stats[ScaleStats.STR]);
+            agi += Number(stats[ScaleStats.AGI]);
+            int += Number(stats[ScaleStats.INT]);
+        }
+
+        if (lw) {
+            const stats = lw.getStatsBuff();
+
+            str += stats[ScaleStats.STR];
+            agi += stats[ScaleStats.AGI];
+            int += Number(stats[ScaleStats.INT]);
+        }
+
+        return {
+            str,
+            agi,
+            int,
+            stm,
+            luck,
+            unluck
+        }
+    }
+
+    public getSpecialAttack(): Array<WeaponSpecial> {
+        if (this.stats.luck > 0) {
+            return this.weapon.map(e => e.special()).filter(Boolean) as Array<WeaponSpecial>;
+        }
+
+        return [];
+    }
+
+    public getCharacterStatus() {
+        const { stm, unluck, luck, int, agi, str } = this.getStats();
+
+        return `сила: ${str}, интелект: ${int}, ловкость: ${agi}, удача: ${luck}, неудача: ${unluck}, выносливость: ${stm}, защита: ${this.getCharacterDefence()}, урон: ${this.getCharacterDamage()}, оружие: [${this.weapon.map((e) => e.getMessage()).join(', ')}]`;
+    }
+}
+
+export {
+    Character
 }

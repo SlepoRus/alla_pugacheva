@@ -19,6 +19,10 @@ class Item {
 
     };
 
+    public getName() {
+        return this.uniqName;
+    }
+
     public canBuy(characterStats: CharacterStats, money: number): boolean {
         return this.isAvailable(characterStats) && this.cost <= money;
     }

@@ -1,23 +1,34 @@
-export type doFunc = (userName: string) => void;
+export type doFunc = (userName: string, cmd: string, client: any, context: any) => void;
 
 class Command {
-    public command: string;
+    private command: string;
+    private client: any;
 
-    constructor(command: string, doFunc: doFunc) {
-        this.command = command;
+    constructor(command: string, doFunc: doFunc, rules?: (context: any) => boolean) {
+        this.command = '!' + command;
         this.do = doFunc;
+
+        if (rules) {
+            this.rules = rules;
+        }
     }
 
-    public do(userName: string, cmd: string) {}
+    private rules(context: any) {
+        return true;
+    };
 
-    public call(userName: string, cmd: string) {
+    public do(userName: string, cmd: string, client: any, context: any) {}
+
+    public call(userName: string, cmd: string, context: any) {
         const { command } = this;
 
-        try {
-            this.do(userName);
-        } catch(e) {
-            console.log(`error while call ${command} on ${userName}`);
-            console.log(e);
+        if (this.rules(context)) {
+            try {
+                this.do(userName, cmd, this.client, context);
+            } catch(e) {
+                console.log(`error while call ${command} on ${userName}`);
+                console.log(e);
+            }
         }
 
         this.log(userName);
@@ -27,10 +38,14 @@ class Command {
         console.warn(this.getLogPath(userName))
     }
 
-    public getLogPath(userName: string) {
-        const { command } = this;
+    public getLogPath(userName: string) {}
 
-        console.warn(__dirname);
+    public getCommand() {
+        return this.command;
+    }
+
+    public setClient(client: any) {
+        this.client = client;
     }
 }
 

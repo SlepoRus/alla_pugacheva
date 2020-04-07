@@ -26,6 +26,12 @@ export enum WeaponType {
     BIG_MACE = 'BIG_MACE'
 }
 
+export enum WeaponSpecial {
+    MUTE_LITE = 'MUTE_LITE',
+    MUTE_MEDIUM = 'MUTE_MEDIUM',
+    MUTE_HARD = 'MUTE_HARD'
+}
+
 export enum ArmorType {
     LITE = 'LITE',
     MEDIUM = 'MEDIUM',

@@ -1,76 +1,34 @@
-import * as tmi from 'tmi';
-import { readFileSync } from 'fs';
-import axios from 'axios';
+import * as tmi from 'tmi.js';
 import * as _ from 'lodash';
+import { readFileSync } from 'fs';
+import {
+    acceptCommand,
+    callFightCommand,
+    callFightForMuteCommand,
+    debugCommand,
+    declineFightCommand,
+    infoCommand
+} from "./src/core/Commands";
+import {Client} from "./src/core/Client";
+import {GameEvents} from "./src/core/Event";
 
 const TEN_SECONDS = 10000;
 const THIRTY_SECONDS = 30000;
 const ONE_MINUTE = 60000;
 const EIGHT_HOURS = 28800000;
 
+const chatCommands: string[][] = [];
+
+function addInWhisperQueue(from: string, userstate:any, message: string, self: any) {
+    chatCommands.push([from, userstate, message, self]);
+}
+
 // configs
 const oauth = readFileSync('./oauth').toString();
-const botConfig = {
-    currentHelloUsers: [],
-    ignoreUsers: ['moobot', 'nightbot', 'sleporus', 'anotherttvviewer'],
-    botIsReady: false,
-    botStopped: false
-};
-
-// reset hello users
-setInterval(() => {
-    console.log('user count = ' + botConfig.currentHelloUsers.length);
-    botConfig.currentHelloUsers = [];
-}, EIGHT_HOURS);
-
-function getAllUsersInChat() {
-    return botConfig.currentHelloUsers.concat(botConfig.ignoreUsers)
-}
-
-const urlUsersInChat = 'https://tmi.twitch.tv/group/user/lordar2r/chatters';
-
-async function getCurrentChatterViewersInChat() {
-    try {
-        const { data } = await axios.get(urlUsersInChat);
-        const { chatters: { viewers } } = data;
-
-        return viewers;
-    } catch(e) {
-        console.log('got error while fetching users');
-    }
-}
-
-async function updateUsersListByChattersViewers() {
-    const users = await getCurrentChatterViewersInChat();
-    const newUsers = users.map((el) => el.toLowerCase());
-    const allUsersBotMeet = getAllUsersInChat();
-
-    newUsers.forEach((el) => {
-        if (!allUsersBotMeet.includes(el)) {
-            botConfig.currentHelloUsers.push(el);
-        }
-    });
-
-    console.log(`UPDATED CHATTERS LIST: ${JSON.stringify(getAllUsersInChat())}`)
-}
-
-// flag for hot wait
-
-function warn() {
-    console.log('start bot warn');
-    setTimeout(() => {
-        console.log('bot warn up');
-        updateUsersListByChattersViewers();
-        if (!botConfig.botStopped) {
-            botConfig.botIsReady = true;
-        }
-    }, ONE_MINUTE)
-}
-
 // Define configuration options
 const opts = {
     identity: {
-        username: 'SlepoRus',
+        username: 'DuelFBot',
         password: oauth
     },
     channels: [
@@ -83,35 +41,77 @@ const client = new tmi.client(opts);
 // Connect to Twitch:
 client.connect();
 
-function onWhisperHandler(from: string, userstate:any, message: string, self: any) {
-    message = message.trim();
+GameEvents.client = client;
 
-    switch(message) {
-        case '!create':
+acceptCommand.setClient(client);
+callFightCommand.setClient(client);
+infoCommand.setClient(client);
+callFightForMuteCommand.setClient(client);
 
-    }
-}
+function onClientJoinHandler(channel, username, self) {};
 
-function getHelloText(name) {
-}
-
-function onClientJoinHandler(channel, username, self) {
-};
-
+let isActive = true;
 // Called every time a message comes in
 function onMessageHandler (channel: string, context: any, msg: string) {
+    if (!isActive) {
+        console.log('afk');
+        return;
+    }
+    const cmdAccept = acceptCommand.getCommand();
+    const cmdCallFight = callFightCommand.getCommand();
+    const cmdInfo = infoCommand.getCommand();
+    const cmdDebug = debugCommand.getCommand();
+    const cmdDecline = declineFightCommand.getCommand();
+    const cmdCallPleaseForFight = callFightForMuteCommand.getCommand();
+
     msg = msg.trim();
+
+    if (!msg) {
+        return;
+    }
+
+    const cmd = msg.split(' ')[0];
+
+    switch (cmd) {
+        case cmdAccept:
+            acceptCommand.call(channel, msg, context);
+            break;
+        case cmdCallFight:
+            callFightCommand.call(channel, msg, context);
+            break;
+        case cmdInfo:
+            infoCommand.call(channel, msg, context);
+            break;
+        case cmdDebug:
+            debugCommand.call(channel, msg, context);
+            break;
+        case cmdDecline:
+            declineFightCommand.call(channel, msg, context);
+            break;
+        case cmdCallPleaseForFight:
+            callFightForMuteCommand.call(channel, msg, context);
+            break;
+        default:
+            console.log('no cmd');
+    }
+
+    isActive = false;
+    reset();
+}
+
+
+function reset() {
+    setTimeout(() => {
+        isActive = true;
+    }, 500)
 }
 
 // Called every time the bot connects to Twitch chat
 function onConnectedHandler (addr, port) {
     console.log(`* Connected to ${addr}:${port}`);
-
-    warn();
 }
 
 // Register our event handlers (defined below)
-client.on('whisper', onWhisperHandler);
 client.on('message', onMessageHandler);
 client.on('connected', onConnectedHandler);
 client.on('join', _.debounce(
